@@ -1,7 +1,7 @@
 import { Driver, SimpleNet } from '@vechain/connex.driver-nodejs';
 import { Framework } from '@vechain/connex-framework';
 import { POW } from './POW';
-import { cry, Transaction, RLP } from 'thor-devkit';
+import { cry, Transaction } from 'thor-devkit';
 
 const BN = require('bn.js');
 
