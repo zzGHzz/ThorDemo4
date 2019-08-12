@@ -54,7 +54,7 @@ export class POW {
         return unsignedTxNoNonceRLP.encode(obj);
     }
 
-    // Evaluate work = MaxUint64/hash(hash(rlp_encoding) || nonce)
+    // Evaluate work = min(MaxUint64, hash(hash(rlp_encoding) || nonce))
     evalWork(rlp: Buffer, nonce: any): any {
         if(!BN.isBN(nonce)) {
             throw "Invalid input";
@@ -76,7 +76,7 @@ export class POW {
         }
 
         const w = work.div(new BN('1000', 10));
-        const m = blockNum.div(new BN((3600*24*30/10).toString(10), 10));
+        const m = blockNum.sub(new BN('1')).div(new BN((3600*24*30/10).toString(10), 10));
         const g = w.mul(new BN('100').pow(m)).div(new BN('104').pow(m));
         
         if(g.gt(MaxUint64)) {
