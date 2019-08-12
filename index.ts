@@ -59,6 +59,11 @@ const origin = '0xe4660c72dea1d9fc2a0dc2b3a42107d37edc6327';
         const txid = ret.id;
         console.log('TXID = ' + txid);
 
+        // const txid = '0x46bf31e8df3dfd5a31ad38cf53a3cf93b285eb0ff517c2b19d9ad133416f19bf';
+        // body.blockRef = '0x003626bd3a756fc1';
+        // body.nonce = '0x4b782e35383381f0';
+        // const rlp = pow.encode(body, origin);
+
         printSeperator();
 
         // Get receipt
@@ -70,14 +75,15 @@ const origin = '0xe4660c72dea1d9fc2a0dc2b3a42107d37edc6327';
          * totalGasPrice = reward / gasUsed / 0.3
          * addedGasPrice = totalGasPrice - baseGasPrice * gasPriceCoef
          */  
-        console.log('TX reward (VTHO) = ' + parseInt(receipt.reward.slice(2), 16) / 1e18);
+        // console.log('TX reward (VTHO) = ' + (parseInt(receipt.reward.slice(2), 16) / 1e18).toExponential(4));
+        // console.log('Used gas = ' + receipt.gasUsed.toExponential(4));
         const totalGasPrice = new BN(receipt.reward.slice(2), 16)
                                 .div(new BN('' + receipt.gasUsed))
                                 .mul(new BN('10')).div(new BN('3'));
-        console.log('Total gas price = ' + totalGasPrice.toString(10));
+        // console.log('Gas price for computing TX reward = ' + BNToExpString(totalGasPrice, 4));
         const BASE_GASPRICE = new BN('' + 1e15);
-        const addedGasPrice = totalGasPrice.sub(BASE_GASPRICE.mul(new BN('' + body.gasPriceCoef)).add(BASE_GASPRICE));
-        console.log('Added gas price = ' + addedGasPrice.toString(10));
+        const minedGasPrice1 = totalGasPrice.sub(BASE_GASPRICE.mul(new BN('' + body.gasPriceCoef)).add(BASE_GASPRICE));
+        console.log('Mined gas price computed from TX receipt = ' + BNToExpString(minedGasPrice1, 4));
 
         printSeperator();
 
@@ -85,9 +91,9 @@ const origin = '0xe4660c72dea1d9fc2a0dc2b3a42107d37edc6327';
         const blockNum = receipt.meta.blockNumber
         const work = pow.evalWork(rlp, new BN(body.nonce.slice(2), 16));
         const workToGas = pow.workToGas(work, new BN('' + blockNum));
-        console.log('Gas convered from Work = ' + workToGas.toString(10));
-        const minedGasPrice = pow.minedGasPrice(workToGas, new BN('' + body.gas), new BN('' + body.gasPriceCoef));
-        console.log('Mined gas price = ' + minedGasPrice.toString(10));
+        // console.log('Gas convered from Work = ' + BNToExpString(workToGas, 4));
+        const minedGasPrice2 = pow.minedGasPrice(workToGas, new BN('' + body.gas), new BN('' + body.gasPriceCoef));
+        console.log('Mined gas price computed from TX data = ' + BNToExpString(minedGasPrice2, 4));
     } catch (err) { console.log(err) }
 })();
 
@@ -119,7 +125,7 @@ function mine(rlp: Buffer, second: number): number {
         }
     }
 
-    console.log("Proved work = " + w.toString(10));
+    console.log("PoW = " + w.toString(10));
     console.log("Nonce = " + nonce);
     console.log("Number of rounds = " + i);
     console.log("Duration (sec) = " + (now - start) / 1000);
@@ -159,4 +165,12 @@ function printSeperator() {
     console.log('');
     console.log('----------------------------------');
     console.log('');
+}
+
+function BNToExpString(num: any, prec: number): string {
+    if(!BN.isBN(num)) {
+        throw "Invalid input";
+    }
+
+    return parseInt(num.toString()).toExponential(prec);
 }

@@ -50,7 +50,7 @@ export class POW {
     // RLP encoding TX \ {nonce, sig} || origin
     encode(body: Transaction.Body, origin: string): Buffer {
         const reserved = this._encodeReserved(body);
-        const obj = Object.assign({}, body, { reserved, origin: origin });
+        const obj = Object.assign({}, body, { reserved, origin });
         return unsignedTxNoNonceRLP.encode(obj);
     }
 
