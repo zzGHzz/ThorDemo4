@@ -59,11 +59,6 @@ const origin = '0xe4660c72dea1d9fc2a0dc2b3a42107d37edc6327';
         const txid = ret.id;
         console.log('TXID = ' + txid);
 
-        // const txid = '0x46bf31e8df3dfd5a31ad38cf53a3cf93b285eb0ff517c2b19d9ad133416f19bf';
-        // body.blockRef = '0x003626bd3a756fc1';
-        // body.nonce = '0x4b782e35383381f0';
-        // const rlp = pow.encode(body, origin);
-
         printSeperator();
 
         // Get receipt
@@ -75,8 +70,6 @@ const origin = '0xe4660c72dea1d9fc2a0dc2b3a42107d37edc6327';
          * totalGasPrice = reward / gasUsed / 0.3
          * addedGasPrice = totalGasPrice - baseGasPrice * gasPriceCoef
          */  
-        // console.log('TX reward (VTHO) = ' + (parseInt(receipt.reward.slice(2), 16) / 1e18).toExponential(4));
-        // console.log('Used gas = ' + receipt.gasUsed.toExponential(4));
         const totalGasPrice = new BN(receipt.reward.slice(2), 16)
                                 .div(new BN('' + receipt.gasUsed))
                                 .mul(new BN('10')).div(new BN('3'));
